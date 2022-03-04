@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [Serializable]
-    internal class ActionNotPermittedException : ApplicationException
+    public class ActionNotPermittedException : ApplicationException
     {
         private string _actionName;
         private string _status;

@@ -9,6 +9,13 @@
         private readonly Actions<TStatus> _actions = new();
         private readonly Transitions<TStatus> _transitions = new();
 
+        protected FlowBase(TStatus defaultStatusValue)
+        {
+            AddPermittedActions();
+            AddPermittedTransitions();
+            Status = defaultStatusValue;
+        }
+
         public TStatus Status { get; private set; }
 
         protected void AddAction(TStatus status, string actionName)
@@ -33,9 +40,8 @@
             Status = newStatus;
         }
 
-        protected void ValidatePermittedAction([CallerMemberName] string callerName = "")
+        protected void ValidatePermittedAction([CallerMemberName] string actionName = "")
         {
-            var actionName = callerName.Split(".").Last();
             if (!_actions.Permitted(Status, actionName))
                 throw new ActionNotPermittedException(Status.ToString(), actionName);
         }

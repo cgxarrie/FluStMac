@@ -4,7 +4,7 @@
     using System.Runtime.Serialization;
 
     [Serializable]
-    internal class TransitionNotPermittedException : ApplicationException
+    public class TransitionNotPermittedException : ApplicationException
     {
         private string _newStatus;
         private string _status;
