@@ -1,4 +1,4 @@
-﻿namespace Cgxarrie.Flow
+﻿namespace Cgxarrie.Flow.Collections
 {
     public class FlowCollection<TKey, TValue>
     {

@@ -1,7 +1,6 @@
-﻿namespace Cgxarrie.Flow
+﻿namespace Cgxarrie.Flow.Collections
 {
     public class Transitions<TStatus> : FlowCollection<TStatus, TStatus>
-                where TStatus : Enum
     {
     }
 }

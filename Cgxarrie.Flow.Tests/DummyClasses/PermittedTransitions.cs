@@ -1,5 +1,7 @@
 ﻿namespace Cgxarrie.Flow.Tests.DummyClasses
 {
+    using Cgxarrie.Flow.Collections;
+
     public class PermittedTransitions : Transitions<MyFlowStatus>
     {
         public PermittedTransitions()

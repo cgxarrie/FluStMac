@@ -1,6 +1,8 @@
 ﻿namespace Cgxarrie.Flow.Tests.DummyClasses
 {
-    public class PermittedActions: Actions<MyFlowStatus>
+    using Cgxarrie.Flow.Collections;
+
+    public class PermittedActions : Actions<MyFlowStatus>
     {
         public PermittedActions()
         {
