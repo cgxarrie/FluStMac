@@ -34,14 +34,18 @@
 
         protected void ChangeStatus(TStatus newStatus)
         {
+            if (newStatus.Equals(Status))
+                return;
+
             if (!_transitions.Permitted(Status, newStatus))
                 throw new TransitionNotPermittedException(Status.ToString(), newStatus.ToString());
 
             Status = newStatus;
         }
 
-        protected void ValidatePermittedAction([CallerMemberName] string actionName = "")
+        protected void ValidatePermittedAction([CallerMemberName] string callerName = "")
         {
+            var actionName = callerName.Split(".").Last();
             if (!_actions.Permitted(Status, actionName))
                 throw new ActionNotPermittedException(Status.ToString(), actionName);
         }

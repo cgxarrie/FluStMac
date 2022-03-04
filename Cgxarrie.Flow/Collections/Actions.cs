@@ -1,6 +1,6 @@
 ﻿namespace Cgxarrie.Flow.Collections
 {
-    public class Actions<TStatus> : FlowCollection<TStatus, string>
+    internal class Actions<TStatus> : FlowCollection<TStatus, string>
     {
     }
 }

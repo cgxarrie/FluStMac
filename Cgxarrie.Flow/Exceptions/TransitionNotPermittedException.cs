@@ -10,7 +10,7 @@
         private string _status;
 
         public TransitionNotPermittedException(string status, string newStatus)
-            : base($"Transitionnot permitted from {status} to {newStatus}")
+            : base($"Transition not permitted from {status} to {newStatus}")
         {
             _status = status;
             _newStatus = newStatus;

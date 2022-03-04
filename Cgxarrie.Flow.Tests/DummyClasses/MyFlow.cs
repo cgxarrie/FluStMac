@@ -12,6 +12,11 @@
             ChangeStatus(MyFlowStatus.Approved);
         }
 
+        public void BackToCreated()
+        {
+            ChangeStatus(MyFlowStatus.Created);
+        }
+
         public void Reject()
         {
             ValidatePermittedAction();
