@@ -12,11 +12,6 @@
             ChangeStatus(MyFlowStatus.Approved);
         }
 
-        public void BackToCreated()
-        {
-            ChangeStatus(MyFlowStatus.Created);
-        }
-
         public void Reject()
         {
             ValidatePermittedAction();
@@ -34,14 +29,6 @@
             AddAction(MyFlowStatus.Created, nameof(SendForApproval));
             AddAction(MyFlowStatus.WaitingForApproval, nameof(Approve));
             AddAction(MyFlowStatus.WaitingForApproval, nameof(Reject));
-        }
-
-        protected override void AddPermittedTransitions()
-        {
-            AddTransition(MyFlowStatus.None, MyFlowStatus.Created);
-            AddTransition(MyFlowStatus.Created, MyFlowStatus.WaitingForApproval);
-            AddTransition(MyFlowStatus.WaitingForApproval, MyFlowStatus.Approved);
-            AddTransition(MyFlowStatus.WaitingForApproval, MyFlowStatus.Rejected);
         }
     }
 }

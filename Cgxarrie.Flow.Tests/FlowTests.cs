@@ -22,21 +22,6 @@ namespace Cgxarrie.Flow.Tests
         }
 
         [Fact]
-        public void BackFromSendForApprovalShouldNotBePermitted()
-        {
-            // Arrange
-            var flow = new MyFlow();
-            flow.SendForApproval();
-
-            // Act
-            var act = () => flow.BackToCreated();
-
-            // Assert
-            var exc = Assert.Throws<TransitionNotPermittedException>(act);
-            exc.Message.Should().Be("Transition not permitted from WaitingForApproval to Created");
-        }
-
-        [Fact]
         public void NewInstanceShouldReturnBeInDefaultStatus()
         {
             // Arrange
