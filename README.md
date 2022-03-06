@@ -63,14 +63,12 @@ public enum Invoice : FlowBase<InvoiceStatus> // Declare the type of the Status
 	public void Reject()
 	{
 		ValidatePermittedAction(); //Check if this Reject can be executed in the current status.
-
 		// Do all needed actions 
 		ChangeStatus(InvoiceStatus.Rejected);
 	}	
 	public void SendForApproval()
 	{
 		ValidatePermittedAction();//Check if this SendForApproval can be executed in the current status.
-
 		// Do all needed actions 
 		ChangeStatus(InvoiceStatus.WaitingForApproval);
 	}	
