@@ -24,7 +24,7 @@
             ChangeStatus(MyFlowStatus.WaitingForApproval);
         }
 
-        protected override void AddPermittedActions()
+        protected override void DefinePermittedActions()
         {
             AddAction(MyFlowStatus.Created, nameof(SendForApproval));
             AddAction(MyFlowStatus.WaitingForApproval, nameof(Approve));
