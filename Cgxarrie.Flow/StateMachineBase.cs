@@ -8,7 +8,7 @@
     public abstract class StateMachineBase<T, TStatus>
     {
         private readonly T _element;
-        private readonly Transitions<T, TStatus> _transitions = new();
+        private readonly ConditionalTransitions<T, TStatus> _transitions = new();
 
         public StateMachineBase(T element, TStatus defaultStatusValue)
         {
@@ -29,14 +29,28 @@
 
         protected void AddTransition(TStatus status, Expression<Action<T>> action, TStatus targetStatus)
         {
-            _transitions.Add(new KeyValuePair<TStatus, string>(status, action.GetName()), targetStatus);
+            _transitions.Add(
+                new KeyValuePair<TStatus, string>(status, action.GetName()),
+                new KeyValuePair<Expression<Func<T, bool>>, TStatus>(null, targetStatus));
+        }
+
+        protected void AddTransition(TStatus status, Expression<Action<T>> action, Expression<Func<T, bool>> condition, TStatus targetStatus)
+        {
+            _transitions.Add(
+                new KeyValuePair<TStatus, string>(status, action.GetName()),
+                new KeyValuePair<Expression<Func<T, bool>>, TStatus>(condition, targetStatus));
         }
 
         protected abstract void DefineTransitions();
 
         private void MoveNext(string actionName)
         {
-            Status = _transitions.GetNext(Status, actionName);
+            (var found, var nextStatus) = _transitions.GetNext(Status, actionName, _element);
+
+            if (!found)
+                throw new TransitionNotFoundException(Status.ToString(), actionName);
+
+            Status = nextStatus!;
         }
 
         private void ValidatePermittedAction(string actionName)

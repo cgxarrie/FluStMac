@@ -8,10 +8,55 @@
     public class StateMachineTests
     {
         [Fact]
-        public void ApproveInStatusWaitingForApprovalShouldBePermitted()
+        public void ApproveInStatusWaitingForApprovalNeedSignatureNotSignedShouldSendToWaitingForSignature()
         {
             // Arrange
             var invoice = new Invoice();
+            invoice.NeedsSignature = true;
+
+            var stateMachine = new InvoiceStateMachine(invoice);
+            stateMachine.Do(x => x.SendForApproval());
+
+            // Act
+            stateMachine.Do(x => x.Approve());
+
+            // Assert
+            stateMachine.Status.Should().Be(MyFlowStatus.WaitingForSignature);
+            invoice.HasBeenSentForApproval.Should().BeTrue();
+            invoice.HasReceivedSignature.Should().BeFalse();
+            invoice.HasBeenApproved.Should().BeTrue();
+            invoice.HasBeenRejected.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ApproveInStatusWaitingForApprovalNeedSignatureSignedShouldSendToApproved()
+        {
+            // Arrange
+            var invoice = new Invoice();
+            invoice.NeedsSignature = true;
+
+            var stateMachine = new InvoiceStateMachine(invoice);
+            stateMachine.Do(x => x.SendForApproval());
+            stateMachine.Do(x => x.ReceiveSignature());
+
+            // Act
+            stateMachine.Do(x => x.Approve());
+
+            // Assert
+            stateMachine.Status.Should().Be(MyFlowStatus.Approved);
+            invoice.HasBeenSentForApproval.Should().BeTrue();
+            invoice.HasReceivedSignature.Should().BeTrue();
+            invoice.HasBeenApproved.Should().BeTrue();
+            invoice.HasBeenRejected.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ApproveInStatusWaitingForApprovalNoNeedSignatureShouldSendToApproved()
+        {
+            // Arrange
+            var invoice = new Invoice();
+            invoice.NeedsSignature = false;
+
             var stateMachine = new InvoiceStateMachine(invoice);
             stateMachine.Do(x => x.SendForApproval());
 
