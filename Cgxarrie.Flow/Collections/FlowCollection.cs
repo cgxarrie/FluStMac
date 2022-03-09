@@ -21,10 +21,17 @@
 
         public bool Permitted(TKey key, TValue value)
         {
-            IEnumerable<TValue> values;
             return
-                _items.TryGetValue(key, out values)
+                _items.ContainsKey(key)
+                && _items.TryGetValue(key, out IEnumerable<TValue> values)
                 && values.Contains(value);
         }
+
+        public bool Permitted(TKey key) => _items.ContainsKey(key);
+
+        protected IEnumerable<TValue> Get(TKey key) =>
+            _items.TryGetValue(key, out IEnumerable<TValue> values)
+                ? values
+                : new List<TValue>();
     }
 }

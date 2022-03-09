@@ -11,7 +11,7 @@
         public FlowBase(TStatus defaultStatusValue)
         {
             Status = defaultStatusValue;
-            AddPermittedActions();
+            DefinePermittedActions();
         }
 
         public TStatus Status { get; private set; }
@@ -21,12 +21,12 @@
             _actions.Add(status, actionName);
         }
 
-        protected abstract void AddPermittedActions();
-
         protected void ChangeStatus(TStatus newStatus)
         {
             Status = newStatus;
         }
+
+        protected abstract void DefinePermittedActions();
 
         protected void ValidatePermittedAction([CallerMemberName] string callerName = "")
         {

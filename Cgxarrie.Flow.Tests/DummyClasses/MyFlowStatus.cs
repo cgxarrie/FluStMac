@@ -6,6 +6,7 @@
         Created = 1,
         WaitingForApproval = 2,
         Approved = 3,
-        Rejected = 4
+        Rejected = 4,
+        WaitingForSignature = 5
     }
 }
