@@ -11,49 +11,63 @@
         public void ApproveInStatusWaitingForApprovalShouldBePermitted()
         {
             // Arrange
-            var stateMachine = new MyStateMachine();
-            stateMachine.SendForApproval();
+            var invoice = new Invoice();
+            var stateMachine = new InvoiceStateMachine(invoice);
+            stateMachine.Do(x => x.SendForApproval());
 
             // Act
-            stateMachine.Approve();
+            stateMachine.Do(x => x.Approve());
 
             // Assert
             stateMachine.Status.Should().Be(MyFlowStatus.Approved);
+            invoice.HasBeenSentForApproval.Should().BeTrue();
+            invoice.HasBeenApproved.Should().BeTrue();
+            invoice.HasBeenRejected.Should().BeFalse();
         }
 
         [Fact]
         public void NewInstanceShouldReturnBeInDefaultStatus()
         {
             // Arrange
+            var invoice = new Invoice();
+
             // Act
-            var stateMachine = new MyStateMachine();
+            var stateMachine = new InvoiceStateMachine(invoice);
 
             // Assert
             stateMachine.Status.Should().Be(MyFlowStatus.Created);
+            invoice.HasBeenSentForApproval.Should().BeFalse();
+            invoice.HasBeenApproved.Should().BeFalse();
+            invoice.HasBeenRejected.Should().BeFalse();
         }
 
         [Fact]
         public void RejectInStatusWaitingForApprovalShouldBePermitted()
         {
             // Arrange
-            var stateMachine = new MyStateMachine();
-            stateMachine.SendForApproval();
+            var invoice = new Invoice();
+            var stateMachine = new InvoiceStateMachine(invoice);
+            stateMachine.Do(x => x.SendForApproval());
 
             // Act
-            stateMachine.Reject();
+            stateMachine.Do(x => x.Reject());
 
             // Assert
             stateMachine.Status.Should().Be(MyFlowStatus.Rejected);
+            invoice.HasBeenSentForApproval.Should().BeTrue();
+            invoice.HasBeenApproved.Should().BeFalse();
+            invoice.HasBeenRejected.Should().BeTrue();
         }
 
         [Fact]
         public void SendForApprovalFromCreatedShouldBePermitted()
         {
             // Arrange
-            var stateMachine = new MyStateMachine();
+            var invoice = new Invoice();
+            var stateMachine = new InvoiceStateMachine(invoice);
 
             // Act
-            stateMachine.SendForApproval();
+            stateMachine.Do(x => x.SendForApproval());
 
             // Assert
             stateMachine.Status.Should().Be(MyFlowStatus.WaitingForApproval);
@@ -63,11 +77,12 @@
         public void SendForApprovalFromSendForApprovalShouldNotBePermitted()
         {
             // Arrange
-            var stateMachine = new MyStateMachine();
-            stateMachine.SendForApproval();
+            var invoice = new Invoice();
+            var stateMachine = new InvoiceStateMachine(invoice);
+            stateMachine.Do(x => x.SendForApproval());
 
             // Act
-            var act = () => stateMachine.SendForApproval();
+            var act = () => stateMachine.Do(x => x.SendForApproval());
 
             // Assert
             var exc = Assert.Throws<ActionNotPermittedException>(act);
