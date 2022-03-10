@@ -1,7 +1,7 @@
-﻿namespace Cgxarrie.Flow.Tests
+﻿namespace Cgxarrie.FluStMac.Tests
 {
-    using Cgxarrie.Flow.Exceptions;
-    using Cgxarrie.Flow.Tests.DummyClasses;
+    using Cgxarrie.FluStMac.Exceptions;
+    using Cgxarrie.FluStMac.Tests.DummyClasses;
     using FluentAssertions;
     using Xunit;
 

@@ -1,4 +1,4 @@
-﻿namespace Cgxarrie.Flow.Exceptions
+﻿namespace Cgxarrie.FluStMac.Exceptions
 {
     using System;
     using System.Runtime.Serialization;

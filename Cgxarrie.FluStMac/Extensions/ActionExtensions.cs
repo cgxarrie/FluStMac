@@ -1,4 +1,4 @@
-﻿namespace Cgxarrie.Flow.Extensions
+﻿namespace Cgxarrie.FluStMac.Extensions
 {
     using System.Linq.Expressions;
 

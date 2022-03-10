@@ -1,20 +1,19 @@
-﻿namespace Cgxarrie.Flow
+﻿namespace Cgxarrie.FluStMac
 {
-    using Cgxarrie.Flow.Exceptions;
-    using Cgxarrie.Flow.Extensions;
-    using Cgxarrie.Flow.Transitions;
+    using Cgxarrie.FluStMac.Exceptions;
+    using Cgxarrie.FluStMac.Extensions;
+    using Cgxarrie.FluStMac.Transitions;
     using System.Linq.Expressions;
 
-    public abstract class StateMachineBase<T, TStatus>
+    public abstract class FluentStateMachine<T, TStatus>
     {
         private readonly T _element;
         private readonly TransitionsList<T, TStatus> _transitions = new();
 
-        public StateMachineBase(T element, TStatus defaultStatusValue)
+        public FluentStateMachine(T element, TStatus defaultStatusValue)
         {
             _element = element;
             Status = defaultStatusValue;
-            DefineTransitions();
         }
 
         public TStatus Status { get; private set; }
@@ -27,14 +26,14 @@
             MoveNext(actionName);
         }
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action, TStatus targetStatus) =>
-            _transitions.Add(status, action.GetName(), targetStatus);
+        internal void AddTransition(Transition<T, TStatus> transition) => _transitions.Add(transition);
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action,
-            Expression<Func<T, bool>> condition, TStatus targetStatus) =>
-            _transitions.Add(status, action.GetName(), targetStatus, condition);
-
-        protected abstract void DefineTransitions();
+        protected Transition<T, TStatus> WithTransition()
+        {
+            var transition = new Transition<T, TStatus>(_transitions.Count + 1);
+            _transitions.Add(transition);
+            return transition;
+        }
 
         private void MoveNext(string actionName)
         {

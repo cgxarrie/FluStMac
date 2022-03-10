@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cgxarrie.Flow\Cgxarrie.Flow.csproj" />
+    <ProjectReference Include="..\Cgxarrie.FluStMac\Cgxarrie.FluStMac.csproj" />
   </ItemGroup>
 
 </Project>

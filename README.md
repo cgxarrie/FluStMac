@@ -1,76 +1,132 @@
-# flow
-Easy handle permitted actions on classes dependig on status
+# FluStMac - Fluent State Machine
+A Fluent finite state machine
+Provides an easy to configure and use state mahine base class
 
- - Flow class must inherit FlowBase< TStatus>
- - TStatus is the type defining the statuses of the workflow
- - All permitted actions by status must be added AddPermittedActions (overriden from abstract base)
- - All action methods must start with command ValidatePermittedAction()
- - When action is not permitted in current status a ActionNotPermittedException is thrown.
+## Features
+- Fluent addition of transitions
+- Transitions based on current status and requested action
+- Conditional transitions based on current status, requested action, and a condition to be met by the element handled by the state machine.
+
+## How to use
+- Declare the collection of possible status to be handled by the machine, of type **TStatus**
+- Declare the element to be handled by the machine of type **T**
+- Declare the machine inheriting FluentStateMachine<T, TStatus>
+- Declare transitions in constructor of the machine
+- Transitions are evaluated in the order they are added. The first transition found matching the current request will provide the new status
+- If the requested action is not permitted in the current Status a **ActionNotPermittedException** is thrown
+- If no condition can be met to get the next status a **TransitionNotFoundException** is thorwn
 
 ## Example
-Given an Invoice, the following worklow should be followed: 
+We will simulate an Invoice workflow, declaring the following statuses
+- Created
+- Waiting for approval
+- Approved
+- Rejected
+- Waiting for signature
 
-|Action| Status  |
-|--|--|
-|1. Create  | Draft  |
-|2. Send for approval  | Waiting for approval  |
-|2.1 Approve  | Approved  |
-|2.2 Reject  | Rejected  |
+the folloing actions
+- Send For Approval
+- Approve
+- Reject
+- Receive signature
+
+and the following use cases
+- In satus Created, On sent for approval, change to Waiting for approval
+- In status Waiting for approval, On Receive signature, stay in Waiting for approval
+- In status Waiting for approval, On Reject, change to Rejected
+- In status Waiting for approval, On Approve, 
+	- When signature is needed and not received,  change to Waiting for signature
+	- Else, change to Approved.
 
 ### Declare Invoice statuses
 ```csharp
 public enum InvoiceStatus
 {
-	Draft = 0,
+	Created = 0,
     WaitingForApproval = 1,
     Approved = 2,
-    Rejected = 3
+    Rejected = 3,
+    WaitingForSignature = 4
 }
 ```
 ### Declare Invoice class
 ```csharp
-public enum Invoice : FlowBase<InvoiceStatus> // Declare the type of the Status
+public enum Invoice
 {
-	public Invoice : base(InvoiceStatus.Draft) //specify the default status
-	{
-	}
+	public Guid Id {get; set;} = Guid.NewGuid();
+	public bool NeedsSignature { get; set; } = false;
 	
-	public Guid Id {get; set;}
-	public string Code {get; set;}	
-	public Guid CustimerId {get; set;}	
-	// All other invoice properties
-
-	//Declare all permitted actions per status (overriden from base class)
-	//In the example:
-	//	In status Draft, SendForApproval is permitted
-	//	In status WaitingForApproval, Approve and Reject are permitted
-	//	In status Approved no action is permitted
-	//	In status Rejected no action is permitted
-	protected override void AddPermittedActions()
-	{
-		AddAction(InvoiceStatus.Draft, nameof(SendForApproval));
-        AddAction(InvoiceStatus.WaitingForApproval, nameof(Approve));
-        AddAction(InvoiceStatus.WaitingForApproval, nameof(Reject));	
-	}
-
+	// flags to change the state of the instance
+	public bool HasBeenApproved { get; private set; } = false;
+    public bool HasBeenRejected { get; private set; } = false;
+    public bool HasBeenSentForApproval { get; private set; } = false;
+    public bool HasReceivedSignature { get; private set; } = false;
+    
+	// Actions
 	public void Approve()
-	{
-		ValidatePermittedAction(); //Check if this Approve can be executed in the current status.
-		// Do all needed actions 
-		ChangeStatus(InvoiceStatus.Approved);
-	}	
-	
-	public void Reject()
-	{
-		ValidatePermittedAction(); //Check if this Reject can be executed in the current status.
-		// Do all needed actions 
-		ChangeStatus(InvoiceStatus.Rejected);
-	}	
-	public void SendForApproval()
-	{
-		ValidatePermittedAction();//Check if this SendForApproval can be executed in the current status.
-		// Do all needed actions 
-		ChangeStatus(InvoiceStatus.WaitingForApproval);
-	}	
+    {
+	    HasBeenApproved = true;
+	}
+
+    public void ReceiveSignature()
+    {
+	    HasReceivedSignature = true;
+	}
+
+    public void Reject()
+    {
+	    HasBeenRejected = true;
+	}
+
+    public void SendForApproval()
+    {
+	    HasBeenSentForApproval = true;
+	}
+}
+```
+### Declare the state machine
+```csharp
+public class InvoiceStateMachine : FluentStateMachine<Invoice, InvoiceStatus>
+{
+    public InvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
+    {
+        WithTransition()
+            .From(InvoiceStatus.Created)
+            .On(x => x.SendForApproval())
+            .To(InvoiceStatus.WaitingForApproval);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.ReceiveSignature())
+            .To(InvoiceStatus.WaitingForApproval);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => x.NeedsSignature && x.HasReceivedSignature)
+            .To(InvoiceStatus.Approved);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => x.NeedsSignature && !x.HasReceivedSignature)
+            .To(InvoiceStatus.WaitingForSignature);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => !x.NeedsSignature)
+            .To(InvoiceStatus.Approved);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Reject())
+            .To(InvoiceStatus.Rejected);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForSignature)
+            .On(x => x.ReceiveSignature())
+            .To(InvoiceStatus.Approved);
+    }
 }
 ```
