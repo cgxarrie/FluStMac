@@ -1,8 +1,8 @@
-﻿namespace Cgxarrie.Flow
+﻿namespace Cgxarrie.FluStMac
 {
-    using Cgxarrie.Flow.Exceptions;
-    using Cgxarrie.Flow.Extensions;
-    using Cgxarrie.Flow.Transitions;
+    using Cgxarrie.FluStMac.Exceptions;
+    using Cgxarrie.FluStMac.Extensions;
+    using Cgxarrie.FluStMac.Transitions;
     using System.Linq.Expressions;
 
     public abstract class FluentStateMachine<T, TStatus>

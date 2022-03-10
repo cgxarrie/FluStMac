@@ -1,4 +1,4 @@
-﻿namespace Cgxarrie.Flow.Transitions
+﻿namespace Cgxarrie.FluStMac.Transitions
 {
     using System.Collections.Generic;
     using System.Linq;

@@ -1,4 +1,4 @@
-﻿namespace Cgxarrie.Flow.Tests.DummyClasses
+﻿namespace Cgxarrie.FluStMac.Tests.DummyClasses
 {
     public enum InvoiceStatus
     {
