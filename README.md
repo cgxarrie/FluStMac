@@ -1,5 +1,5 @@
 # FluStMac - Fluent State Machine
-A Fluent finite state machine wich provides an easy to configure and use state mahine base class
+A Fluent finite state machine which provides an easy to configure and use state mahine base class
 
 ## Features
 - Fluent addition of transitions
