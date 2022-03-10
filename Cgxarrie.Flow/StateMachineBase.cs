@@ -14,7 +14,6 @@
         {
             _element = element;
             Status = defaultStatusValue;
-            DefineTransitions();
         }
 
         public TStatus Status { get; private set; }
@@ -27,14 +26,14 @@
             MoveNext(actionName);
         }
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action, TStatus targetStatus) =>
-            _transitions.Add(status, action.GetName(), targetStatus);
+        internal void AddTransition(Transition<T, TStatus> transition) => _transitions.Add(transition);
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action,
-            Expression<Func<T, bool>> condition, TStatus targetStatus) =>
-            _transitions.Add(status, action.GetName(), targetStatus, condition);
-
-        protected abstract void DefineTransitions();
+        protected Transition<T, TStatus> WithTransition()
+        {
+            var transition = new Transition<T, TStatus>(_transitions.Count + 1);
+            _transitions.Add(transition);
+            return transition;
+        }
 
         private void MoveNext(string actionName)
         {

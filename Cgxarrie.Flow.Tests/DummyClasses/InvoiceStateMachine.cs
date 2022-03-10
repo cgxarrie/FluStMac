@@ -4,17 +4,43 @@
     {
         public InvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
         {
-        }
+            WithTransition()
+                .From(InvoiceStatus.Created)
+                .On(x => x.SendForApproval())
+                .To(InvoiceStatus.WaitingForApproval);
 
-        protected override void DefineTransitions()
-        {
-            AddTransition(InvoiceStatus.Created, x => x.SendForApproval(), InvoiceStatus.WaitingForApproval);
-            AddTransition(InvoiceStatus.WaitingForApproval, x => x.ReceiveSignature(), InvoiceStatus.WaitingForApproval);
-            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && x.HasReceivedSignature, InvoiceStatus.Approved);
-            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && !x.HasReceivedSignature, InvoiceStatus.WaitingForSignature);
-            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => !x.NeedsSignature, InvoiceStatus.Approved);
-            AddTransition(InvoiceStatus.WaitingForSignature, x => x.ReceiveSignature(), InvoiceStatus.Approved);
-            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Reject(), InvoiceStatus.Rejected);
+            WithTransition()
+                .From(InvoiceStatus.WaitingForApproval)
+                .On(x => x.ReceiveSignature())
+                .To(InvoiceStatus.WaitingForApproval);
+
+            WithTransition()
+                .From(InvoiceStatus.WaitingForApproval)
+                .On(x => x.Approve())
+                .When(x => x.NeedsSignature && x.HasReceivedSignature)
+                .To(InvoiceStatus.Approved);
+
+            WithTransition()
+                .From(InvoiceStatus.WaitingForApproval)
+                .On(x => x.Approve())
+                .When(x => x.NeedsSignature && !x.HasReceivedSignature)
+                .To(InvoiceStatus.WaitingForSignature);
+
+            WithTransition()
+                .From(InvoiceStatus.WaitingForApproval)
+                .On(x => x.Approve())
+                .When(x => !x.NeedsSignature)
+                .To(InvoiceStatus.Approved);
+
+            WithTransition()
+                .From(InvoiceStatus.WaitingForApproval)
+                .On(x => x.Reject())
+                .To(InvoiceStatus.Rejected);
+
+            WithTransition()
+                .From(InvoiceStatus.WaitingForSignature)
+                .On(x => x.ReceiveSignature())
+                .To(InvoiceStatus.Approved);
         }
     }
 }

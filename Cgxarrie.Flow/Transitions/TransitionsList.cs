@@ -1,36 +1,29 @@
 ﻿namespace Cgxarrie.Flow.Transitions
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
 
     public class TransitionsList<T, TStatus>
     {
         private IList<Transition<T, TStatus>> _items = new List<Transition<T, TStatus>>();
 
-        public bool Permitted(TStatus fromStatus, string actionName) =>
-            _items.Any(x => x.FromStatus.Equals(fromStatus) && x.Action == actionName);
+        public int Count => _items.Count;
 
-        internal void Add(TStatus fromStatus, string actionName, TStatus toStatus, Expression<Func<T, bool>>? condition = null)
+        public bool Permitted(TStatus fromStatus, string actionName) =>
+            _items.Any(x => x.FromStatus.Equals(fromStatus) && x.ActionName == actionName);
+
+        internal void Add(Transition<T, TStatus> transition)
         {
-            if (_items.Any(x => x.FromStatus.Equals(fromStatus) && x.ToStatus.Equals(toStatus) &&
-                                x.Action == actionName && x.Condition == condition))
+            if (_items.Any(x => x.Equals(transition)))
                 return;
 
-            _items.Add(new Transition<T, TStatus>(_items.Count + 1)
-            {
-                FromStatus = fromStatus,
-                ToStatus = toStatus,
-                Action = actionName,
-                Condition = condition
-            });
+            _items.Add(transition);
         }
 
         internal (bool, TStatus?) GetNextStatus(TStatus status, string actionName, T element)
         {
-            var targets = _items.Where(x => x.FromStatus.Equals(status) && x.Action == actionName);
-            foreach (var target in targets)
+            var targets = _items.Where(x => x.FromStatus.Equals(status) && x.ActionName == actionName);
+            foreach (var target in targets.OrderBy(x => x.Order))
             {
                 if (target.Condition == null || target.Condition.Compile().Invoke(element))
                     return (true, target.ToStatus);
