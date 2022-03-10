@@ -5,12 +5,12 @@
     using Cgxarrie.Flow.Transitions;
     using System.Linq.Expressions;
 
-    public abstract class StateMachineBase<T, TStatus>
+    public abstract class FluentStateMachine<T, TStatus>
     {
         private readonly T _element;
         private readonly TransitionsList<T, TStatus> _transitions = new();
 
-        public StateMachineBase(T element, TStatus defaultStatusValue)
+        public FluentStateMachine(T element, TStatus defaultStatusValue)
         {
             _element = element;
             Status = defaultStatusValue;
