@@ -1,6 +1,6 @@
 ﻿namespace Cgxarrie.Flow.Tests.DummyClasses
 {
-    public enum MyFlowStatus
+    public enum InvoiceStatus
     {
         None = 0,
         Created = 1,
