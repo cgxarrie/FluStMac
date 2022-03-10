@@ -1,14 +1,14 @@
 ﻿namespace Cgxarrie.Flow
 {
-    using Cgxarrie.Flow.Collections;
     using Cgxarrie.Flow.Exceptions;
     using Cgxarrie.Flow.Extensions;
+    using Cgxarrie.Flow.Transitions;
     using System.Linq.Expressions;
 
     public abstract class StateMachineBase<T, TStatus>
     {
         private readonly T _element;
-        private readonly ConditionalTransitions<T, TStatus> _transitions = new();
+        private readonly TransitionsList<T, TStatus> _transitions = new();
 
         public StateMachineBase(T element, TStatus defaultStatusValue)
         {
@@ -27,25 +27,18 @@
             MoveNext(actionName);
         }
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action, TStatus targetStatus)
-        {
-            _transitions.Add(
-                new KeyValuePair<TStatus, string>(status, action.GetName()),
-                new KeyValuePair<Expression<Func<T, bool>>, TStatus>(null, targetStatus));
-        }
+        protected void AddTransition(TStatus status, Expression<Action<T>> action, TStatus targetStatus) =>
+            _transitions.Add(status, action.GetName(), targetStatus);
 
-        protected void AddTransition(TStatus status, Expression<Action<T>> action, Expression<Func<T, bool>> condition, TStatus targetStatus)
-        {
-            _transitions.Add(
-                new KeyValuePair<TStatus, string>(status, action.GetName()),
-                new KeyValuePair<Expression<Func<T, bool>>, TStatus>(condition, targetStatus));
-        }
+        protected void AddTransition(TStatus status, Expression<Action<T>> action,
+            Expression<Func<T, bool>> condition, TStatus targetStatus) =>
+            _transitions.Add(status, action.GetName(), targetStatus, condition);
 
         protected abstract void DefineTransitions();
 
         private void MoveNext(string actionName)
         {
-            (var found, var nextStatus) = _transitions.GetNext(Status, actionName, _element);
+            (var found, var nextStatus) = _transitions.GetNextStatus(Status, actionName, _element);
 
             if (!found)
                 throw new TransitionNotFoundException(Status.ToString(), actionName);
@@ -55,8 +48,7 @@
 
         private void ValidatePermittedAction(string actionName)
         {
-            var key = new KeyValuePair<TStatus, string>(Status, actionName);
-            if (!_transitions.Permitted(key))
+            if (!_transitions.Permitted(Status, actionName))
                 throw new ActionNotPermittedException(Status.ToString(), actionName);
         }
     }

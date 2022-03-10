@@ -1,20 +1,20 @@
 ﻿namespace Cgxarrie.Flow.Tests.DummyClasses
 {
-    public class InvoiceStateMachine : StateMachineBase<Invoice, MyFlowStatus>
+    public class InvoiceStateMachine : StateMachineBase<Invoice, InvoiceStatus>
     {
-        public InvoiceStateMachine(Invoice invoice) : base(invoice, MyFlowStatus.Created)
+        public InvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
         {
         }
 
         protected override void DefineTransitions()
         {
-            AddTransition(MyFlowStatus.Created, x => x.SendForApproval(), MyFlowStatus.WaitingForApproval);
-            AddTransition(MyFlowStatus.WaitingForApproval, x => x.ReceiveSignature(), MyFlowStatus.WaitingForApproval);
-            AddTransition(MyFlowStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && x.HasReceivedSignature, MyFlowStatus.Approved);
-            AddTransition(MyFlowStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && !x.HasReceivedSignature, MyFlowStatus.WaitingForSignature);
-            AddTransition(MyFlowStatus.WaitingForApproval, x => x.Approve(), x => !x.NeedsSignature, MyFlowStatus.Approved);
-            AddTransition(MyFlowStatus.WaitingForSignature, x => x.ReceiveSignature(), MyFlowStatus.Approved);
-            AddTransition(MyFlowStatus.WaitingForApproval, x => x.Reject(), MyFlowStatus.Rejected);
+            AddTransition(InvoiceStatus.Created, x => x.SendForApproval(), InvoiceStatus.WaitingForApproval);
+            AddTransition(InvoiceStatus.WaitingForApproval, x => x.ReceiveSignature(), InvoiceStatus.WaitingForApproval);
+            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && x.HasReceivedSignature, InvoiceStatus.Approved);
+            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => x.NeedsSignature && !x.HasReceivedSignature, InvoiceStatus.WaitingForSignature);
+            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Approve(), x => !x.NeedsSignature, InvoiceStatus.Approved);
+            AddTransition(InvoiceStatus.WaitingForSignature, x => x.ReceiveSignature(), InvoiceStatus.Approved);
+            AddTransition(InvoiceStatus.WaitingForApproval, x => x.Reject(), InvoiceStatus.Rejected);
         }
     }
 }
