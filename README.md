@@ -1,3 +1,4 @@
+
 # FluStMac - Fluent State Machine
 A Fluent finite state machine which provides an easy to configure and use state mahine base class
 
@@ -14,6 +15,54 @@ A Fluent finite state machine which provides an easy to configure and use state 
 - Transitions are evaluated in the order they are added. The first transition found matching the current request will provide the new status
 - If the requested action is not permitted in the current Status a **ActionNotPermittedException** is thrown
 - If no condition can be met to get the next status a **TransitionNotFoundException** is thorwn
+
+### Declaration of transitions
+Valid transitions are added to the state machine on constructor via the following fluent command
+```csharp
+        WithTransition()
+            .From(Initial status) // Starting in this status
+            .On(action) // On executing this action
+            .When(condition) // and this condition is met (optional)
+            .To(target status); // This will be the next satus
+```
+Should there be a base state machine and derived, consider declaring the base transitions in a protected method, then call it after child transitions in constructor
+```csharp
+public abstract class BaseStateMachine
+{
+	public BaseStateMachine()
+	{
+	}
+	
+	protected void AddCommonTransitions()
+	{
+		AddBaseTransition01();
+		AddBaseTransition02();
+		AddBaseTransition03();
+	}
+}
+
+public class DerivedStateMachine01()
+{
+	public DerivedStateMachine01() 
+	{
+		AddDerivedTransition0101();
+		AddDerivedTransition0102();
+
+		base.AddCommonTransitions();
+	}
+}
+
+public class DerivedStateMachine02()
+{
+	public DerivedStateMachine02() 
+	{
+		AddDerivedTransition0201();
+		AddDerivedTransition0202();
+
+		base.AddCommonTransitions();
+	}
+}
+```
 
 ## Example
 We will simulate an Invoice workflow, declaring the following statuses
