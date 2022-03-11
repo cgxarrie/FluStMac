@@ -4,6 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Description>A Fluent finite state machine which provides an easy to configure and use state mahine base class</Description>
+    <PackageProjectUrl>https://www.nuget.org/packages/cgxarrie.FluStMac</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/cgxarrie/FluStMac</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
