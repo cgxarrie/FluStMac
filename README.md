@@ -129,3 +129,23 @@ public class InvoiceStateMachine : FluentStateMachine<Invoice, InvoiceStatus>
     }
 }
 ```
+### Using the state machine
+```csharp
+public class InvoiceService
+{
+	public async Task Approve(Guid id)
+	{
+		var invoice = await GetInvoiceFromDataSource(id);
+		var sm = new InvoiceStateMachine(invoice);
+		sm.Do(x => x.Approve);
+	}
+
+	public async Task Reject(Guid id)
+	{
+		var invoice = await GetInvoiceFromDataSource(id);
+		var sm = new InvoiceStateMachine(invoice);
+		sm.Do(x => x.Reject);
+	}
+
+}
+```
