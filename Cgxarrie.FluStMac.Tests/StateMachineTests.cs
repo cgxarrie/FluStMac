@@ -21,7 +21,7 @@
             stateMachine.Do(x => x.Approve());
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.WaitingForSignature);
+            invoice.Status.Should().Be(InvoiceStatus.WaitingForSignature);
             invoice.HasBeenSentForApproval.Should().BeTrue();
             invoice.HasReceivedSignature.Should().BeFalse();
             invoice.HasBeenApproved.Should().BeTrue();
@@ -43,7 +43,7 @@
             stateMachine.Do(x => x.Approve());
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.Approved);
+            invoice.Status.Should().Be(InvoiceStatus.Approved);
             invoice.HasBeenSentForApproval.Should().BeTrue();
             invoice.HasReceivedSignature.Should().BeTrue();
             invoice.HasBeenApproved.Should().BeTrue();
@@ -64,7 +64,7 @@
             stateMachine.Do(x => x.Approve());
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.Approved);
+            invoice.Status.Should().Be(InvoiceStatus.Approved);
             invoice.HasBeenSentForApproval.Should().BeTrue();
             invoice.HasBeenApproved.Should().BeTrue();
             invoice.HasBeenRejected.Should().BeFalse();
@@ -80,7 +80,7 @@
             var stateMachine = new InvoiceStateMachine(invoice);
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.Created);
+            invoice.Status.Should().Be(InvoiceStatus.Draft);
             invoice.HasBeenSentForApproval.Should().BeFalse();
             invoice.HasBeenApproved.Should().BeFalse();
             invoice.HasBeenRejected.Should().BeFalse();
@@ -98,14 +98,14 @@
             stateMachine.Do(x => x.Reject());
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.Rejected);
+            invoice.Status.Should().Be(InvoiceStatus.Rejected);
             invoice.HasBeenSentForApproval.Should().BeTrue();
             invoice.HasBeenApproved.Should().BeFalse();
             invoice.HasBeenRejected.Should().BeTrue();
         }
 
         [Fact]
-        public void SendForApprovalFromCreatedShouldBePermitted()
+        public void SendForApprovalFromDraftShouldBePermitted()
         {
             // Arrange
             var invoice = new Invoice();
@@ -115,7 +115,7 @@
             stateMachine.Do(x => x.SendForApproval());
 
             // Assert
-            stateMachine.Status.Should().Be(InvoiceStatus.WaitingForApproval);
+            invoice.Status.Should().Be(InvoiceStatus.WaitingForApproval);
         }
 
         [Fact]

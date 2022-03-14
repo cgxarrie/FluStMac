@@ -2,10 +2,10 @@
 
 public class InvoiceStateMachine : FluentStateMachine<Invoice, InvoiceStatus>
 {
-    public InvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
+    public InvoiceStateMachine(Invoice invoice) : base(invoice)
     {
         WithTransition()
-            .From(InvoiceStatus.Created)
+            .From(InvoiceStatus.Draft)
             .On(x => x.SendForApproval())
             .To(InvoiceStatus.WaitingForApproval);
 

@@ -2,11 +2,10 @@
 {
     public enum InvoiceStatus
     {
-        None = 0,
-        Created = 1,
-        WaitingForApproval = 2,
-        Approved = 3,
-        Rejected = 4,
-        WaitingForSignature = 5
+        Draft = 0,
+        WaitingForApproval = 1,
+        Approved = 2,
+        Rejected = 3,
+        WaitingForSignature = 4
     }
 }

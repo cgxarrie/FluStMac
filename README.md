@@ -9,7 +9,7 @@ A Fluent finite state machine which provides an easy to configure and use state 
 
 ## How to use
 - Declare the collection of possible status to be handled by the machine, of type **TStatus**
-- Declare the element to be handled by the machine of type **T**
+- Declare the element to be handled by the machine of type **T**, inheriting **StateMachineElement< TStatus>**
 - Declare the machine inheriting FluentStateMachine<T, TStatus>
 - Declare transitions in constructor of the machine
 - Transitions are evaluated in the order they are added. The first transition found matching the current request will provide the new status
@@ -99,7 +99,7 @@ public enum InvoiceStatus
 ```
 ### Declare Invoice class
 ```csharp
-public enum Invoice
+public enum Invoice : StateMachineElement<InvoiceStatus>
 {
 	public Guid Id {get; set;} = Guid.NewGuid();
 	public bool NeedsSignature { get; set; } = false;

@@ -2,13 +2,12 @@
 {
     using System;
 
-    public class Invoice
+    public class Invoice : StateMachineElement<InvoiceStatus>
     {
         public bool HasBeenApproved { get; private set; } = false;
         public bool HasBeenRejected { get; private set; } = false;
         public bool HasBeenSentForApproval { get; private set; } = false;
         public bool HasReceivedSignature { get; private set; } = false;
-
         public Guid Id { get; set; } = Guid.NewGuid();
         public bool NeedsSignature { get; set; } = false;
 

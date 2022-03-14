@@ -6,17 +6,15 @@
     using System.Linq.Expressions;
 
     public abstract class FluentStateMachine<T, TStatus>
+        where T : StateMachineElement<TStatus>
     {
         private readonly T _element;
         private readonly TransitionsList<T, TStatus> _transitions = new();
 
-        public FluentStateMachine(T element, TStatus defaultStatusValue)
+        public FluentStateMachine(T element)
         {
             _element = element;
-            Status = defaultStatusValue;
         }
-
-        public TStatus Status { get; private set; }
 
         public void Do(Expression<Action<T>> action)
         {
@@ -37,18 +35,18 @@
 
         private void MoveNext(string actionName)
         {
-            (var found, var nextStatus) = _transitions.GetNextStatus(Status, actionName, _element);
+            (var found, var nextStatus) = _transitions.GetNextStatus(_element.Status, actionName, _element);
 
             if (!found)
-                throw new TransitionNotFoundException(Status.ToString(), actionName);
+                throw new TransitionNotFoundException(_element.Status.ToString(), actionName);
 
-            Status = nextStatus!;
+            _element.Status = nextStatus!;
         }
 
         private void ValidatePermittedAction(string actionName)
         {
-            if (!_transitions.Permitted(Status, actionName))
-                throw new ActionNotPermittedException(Status.ToString(), actionName);
+            if (!_transitions.Permitted(_element.Status, actionName))
+                throw new ActionNotPermittedException(_element.Status.ToString(), actionName);
         }
     }
 }
