@@ -9,9 +9,6 @@
 
         public int Count => _items.Count;
 
-        public bool Permitted(TStatus fromStatus, string actionName) =>
-            _items.Any(x => x.FromStatus.Equals(fromStatus) && x.ActionName == actionName);
-
         internal void Add(Transition<T, TStatus> transition)
         {
             if (_items.Any(x => x.Equals(transition)))
@@ -31,5 +28,12 @@
 
             return (false, default);
         }
+
+        internal IEnumerable<string> ValidActions(TStatus status) =>
+            _items
+            .Where(i => i.FromStatus.Equals(status))
+            .Select(i => i.ActionName)
+            .Distinct()
+            .OrderBy(i => i);
     }
 }

@@ -24,6 +24,8 @@
             MoveNext(actionName);
         }
 
+        public IEnumerable<string> ValidActions() => _transitions.ValidActions(_element.Status);
+
         internal void AddTransition(Transition<T, TStatus> transition) => _transitions.Add(transition);
 
         protected Transition<T, TStatus> WithTransition()
@@ -45,8 +47,10 @@
 
         private void ValidatePermittedAction(string actionName)
         {
-            if (!_transitions.Permitted(_element.Status, actionName))
+            if (!_transitions.ValidActions(_element.Status).Contains(actionName))
+            {
                 throw new ActionNotPermittedException(_element.Status.ToString(), actionName);
+            }
         }
     }
 }
