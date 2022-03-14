@@ -7,8 +7,18 @@
     <Description>A Fluent finite state machine which provides an easy to configure and use state mahine base class</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/cgxarrie.FluStMac</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cgxarrie/FluStMac</RepositoryUrl>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>state-machine;state;machine;fluent;</PackageTags>
+    <Version>1.0.1</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
