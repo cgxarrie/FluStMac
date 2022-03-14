@@ -12,7 +12,7 @@ A Fluent finite state machine which provides an easy to configure and use state 
 - Declare the element to be handled by the machine of type **T**, inheriting **StateMachineElement< TStatus>**
 - Declare the machine inheriting FluentStateMachine<T, TStatus>
 - Declare transitions in constructor of the machine
-- Transitions are evaluated in the order they are added. The first transition found matching the current request will provide the new status
+- Transitions are evaluated in the reverse order they are added. The last transition found matching the current request will provide the new status (add first the less restrictive transitions)
 - If the requested action is not permitted in the current Status a **ActionNotPermittedException** is thrown
 - If no condition can be met to get the next status a **TransitionNotFoundException** is thorwn
 
@@ -31,10 +31,6 @@ public abstract class BaseStateMachine
 {
 	public BaseStateMachine()
 	{
-	}
-	
-	protected void AddCommonTransitions()
-	{
 		AddBaseTransition01();
 		AddBaseTransition02();
 		AddBaseTransition03();
@@ -47,8 +43,6 @@ public class DerivedStateMachine01()
 	{
 		AddDerivedTransition0101();
 		AddDerivedTransition0102();
-
-		base.AddCommonTransitions();
 	}
 }
 
@@ -58,13 +52,11 @@ public class DerivedStateMachine02()
 	{
 		AddDerivedTransition0201();
 		AddDerivedTransition0202();
-
-		base.AddCommonTransitions();
 	}
 }
 ```
 
-## Example
+## Example 1 : State-Machine
 We will simulate an Invoice workflow, declaring the following statuses
 - Created
 - Waiting for approval
@@ -196,5 +188,76 @@ public class InvoiceService
 		sm.Do(x => x.Reject);
 	}
 
+}
+```
+## Example 2: Inherited State-Machine
+The following example ilustrates how to use different state-machines for different user roles.
+
+Imagine the same Invoice Statuses List, same Invoice class, and same allowed transitions. But with the folloging restrictions:
+
+ - **Only SalesAgent** can Send For approval
+ - **Only SalesManager** can Approve invoice
+ - **Only SalesManager** can Reject invoice
+ - **All** can Receive Signature
+
+First, we create the base state machine, with the transitions permitted for **all**
+```csharp
+public abstract class InvoiceStateMachine : FluentStateMachine<Invoice, InvoiceStatus>
+{
+    public InvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
+    {
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.ReceiveSignature())
+            .To(InvoiceStatus.WaitingForApproval);
+
+       WithTransition()
+            .From(InvoiceStatus.WaitingForSignature)
+            .On(x => x.ReceiveSignature())
+            .To(InvoiceStatus.Approved);
+    }
+}
+```
+
+Then the specific state-machines
+```csharp
+public class SalesAgentInvoiceStateMachine : InvoiceStateMachine
+{
+    public SalesAgentInvoiceStateMachine(Invoice invoice) : base(invoice, InvoiceStatus.Created)
+    {
+        WithTransition()
+            .From(InvoiceStatus.Created)
+            .On(x => x.SendForApproval())
+            .To(InvoiceStatus.WaitingForApproval);
+    }
+}
+
+public class SalesManagerInvoiceStateMachine : InvoiceStateMachine
+{
+    public SalesManagerInvoiceStateMachine (Invoice invoice) : base(invoice, InvoiceStatus.Created)
+    {
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => x.NeedsSignature && x.HasReceivedSignature)
+            .To(InvoiceStatus.Approved);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => x.NeedsSignature && !x.HasReceivedSignature)
+            .To(InvoiceStatus.WaitingForSignature);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Approve())
+            .When(x => !x.NeedsSignature)
+            .To(InvoiceStatus.Approved);
+
+        WithTransition()
+            .From(InvoiceStatus.WaitingForApproval)
+            .On(x => x.Reject())
+            .To(InvoiceStatus.Rejected);
+    }
 }
 ```

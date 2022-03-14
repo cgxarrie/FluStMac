@@ -11,7 +11,7 @@
     <FileVersion></FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>state-machine;state;machine;fluent;</PackageTags>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

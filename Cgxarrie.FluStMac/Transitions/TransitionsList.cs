@@ -20,7 +20,7 @@
         internal (bool, TStatus?) GetNextStatus(TStatus status, string actionName, T element)
         {
             var targets = _items.Where(x => x.FromStatus.Equals(status) && x.ActionName == actionName);
-            foreach (var target in targets.OrderBy(x => x.Order))
+            foreach (var target in targets.OrderByDescending(x => x.Order))
             {
                 if (target.Condition == null || target.Condition.Compile().Invoke(element))
                     return (true, target.ToStatus);
