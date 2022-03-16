@@ -2,6 +2,8 @@
 # FluStMac - Fluent State Machine
 A Fluent finite state machine which provides an easy to configure and use state mahine base class
 
+FluStMac Nuget : [https://www.nuget.org/packages/Cgxarrie.FluStMac/]
+
 ## Features
 - Fluent addition of transitions
 - Transitions based on current status and requested action
